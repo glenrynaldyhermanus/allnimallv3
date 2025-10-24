@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+		<base href="$FLUTTER_BASE_HREF" />
+
+		<meta charset="UTF-8" />
+		<meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta
+			name="description"
+			content="Allnimall - Smart QR Pet Collar Platform. Keep your pets safe with digital identity, health records, and lost pet recovery." />
+		<meta
+			name="keywords"
+			content="pet collar, qr code, pet safety, lost pet, pet health, digital pet id" />
+		<meta name="author" content="Allnimall" />
+
+		<!-- Open Graph Meta Tags -->
+		<meta property="og:title" content="Allnimall - Smart QR Pet Collar" />
+		<meta
+			property="og:description"
+			content="Keep your pets safe with digital identity, health records, and lost pet recovery." />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://pet-allnimall.web.app" />
+
+		<!-- Twitter Card Meta Tags -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Allnimall - Smart QR Pet Collar" />
+		<meta
+			name="twitter:description"
+			content="Keep your pets safe with digital identity, health records, and lost pet recovery." />
+
+		<!-- iOS meta tags & icons -->
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta
+			name="apple-mobile-web-app-status-bar-style"
+			content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="Allnimall" />
+		<meta name="theme-color" content="#8A2BE2" />
+		<link rel="apple-touch-icon" href="icons/Icon-192.png" />
+
+		<!-- Favicon -->
+		<link rel="icon" type="image/png" href="favicon.png" />
+
+		<title>Allnimall - Smart QR Pet Collar Platform</title>
+		<link rel="manifest" href="manifest.json" />
+
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				background: linear-gradient(135deg, #8a2be2 0%, #ff69b4 100%);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 100vh;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					sans-serif;
+			}
+
+			.loading {
+				text-align: center;
+				color: white;
+			}
+
+			.spinner {
+				width: 50px;
+				height: 50px;
+				border: 4px solid rgba(255, 255, 255, 0.3);
+				border-top-color: white;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+				margin: 0 auto 20px;
+			}
+
+			@keyframes spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+
+			.loading-text {
+				font-size: 16px;
+				font-weight: 500;
+			}
+
+			/* Hide reCAPTCHA container (invisible reCAPTCHA) */
+			#recaptcha-container {
+				position: fixed;
+				bottom: 0;
+				right: 0;
+				z-index: 9999;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- reCAPTCHA container for Firebase Phone Auth -->
+		<div id="recaptcha-container"></div>
+
+		<div class="loading">
+			<div class="spinner"></div>
+			<div class="loading-text">Loading Allnimall...</div>
+		</div>
+		<script src="flutter_bootstrap.js" async></script>
+	</body>
+</html>

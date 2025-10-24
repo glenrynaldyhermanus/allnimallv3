@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "allnimall"
+  },
+  "targets": {
+    "allnimall": {
+      "hosting": {
+        "pet-allnimall": [
+          "pet-allnimall"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
