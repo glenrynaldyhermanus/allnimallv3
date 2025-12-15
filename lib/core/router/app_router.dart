@@ -128,7 +128,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'pet-new',
         builder: (context, state) {
           final petId = state.uri.queryParameters['petId'] ?? '';
-          return PetRegistrationPage(petId: petId);
+          final qrId = state.uri.queryParameters['qrId'] ?? '';
+          return PetRegistrationPage(petId: petId, qrId: qrId);
         },
       ),
 

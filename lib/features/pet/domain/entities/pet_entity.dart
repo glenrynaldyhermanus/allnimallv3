@@ -11,6 +11,7 @@ class PetEntity extends Equatable {
   final String? color;
   final double? weight;
   final String? microchipId;
+  final String? qrId; // NEW: QR ID for collar
   final String? pictureUrl;
   final String? story;
   final bool isLost;
@@ -35,6 +36,7 @@ class PetEntity extends Equatable {
     this.color,
     this.weight,
     this.microchipId,
+    this.qrId,
     this.pictureUrl,
     this.story,
     this.isLost = false,
@@ -81,6 +83,7 @@ class PetEntity extends Equatable {
     String? color,
     double? weight,
     String? microchipId,
+    String? qrId,
     String? pictureUrl,
     String? story,
     bool? isLost,
@@ -105,6 +108,7 @@ class PetEntity extends Equatable {
       color: color ?? this.color,
       weight: weight ?? this.weight,
       microchipId: microchipId ?? this.microchipId,
+      qrId: qrId ?? this.qrId,
       pictureUrl: pictureUrl ?? this.pictureUrl,
       story: story ?? this.story,
       isLost: isLost ?? this.isLost,
@@ -132,6 +136,7 @@ class PetEntity extends Equatable {
     color,
     weight,
     microchipId,
+    qrId,
     pictureUrl,
     story,
     isLost,

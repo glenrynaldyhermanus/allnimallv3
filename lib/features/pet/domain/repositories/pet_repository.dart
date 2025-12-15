@@ -127,6 +127,7 @@ abstract class PetRepository {
   /// Create scan log
   Future<Either<Failure, ScanLogEntity>> createScanLog({
     required String petId,
+    String? qrId, // NEW: QR ID for tracking
     double? latitude,
     double? longitude,
     String? scannedByIp,

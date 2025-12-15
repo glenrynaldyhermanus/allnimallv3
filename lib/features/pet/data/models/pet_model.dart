@@ -12,6 +12,7 @@ class PetModel extends PetEntity {
     super.color,
     super.weight,
     super.microchipId,
+    super.qrId,
     super.pictureUrl,
     super.story,
     super.isLost,
@@ -42,6 +43,7 @@ class PetModel extends PetEntity {
           ? (json['weight'] as num).toDouble()
           : null,
       microchipId: json['microchip_id'] as String?,
+      qrId: json['qr_id'] as String?,
       pictureUrl: json['picture_url'] as String?,
       story: json['story'] as String?,
       isLost: json['is_lost'] as bool? ?? false,

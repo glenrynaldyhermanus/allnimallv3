@@ -20,9 +20,10 @@ import '../providers/pet_providers.dart';
 import '../widgets/pet_form_widgets.dart';
 
 class PetRegistrationPage extends ConsumerStatefulWidget {
-  final String petId;
+  final String? petId; // Keep for backward compatibility
+  final String? qrId; // NEW: QR ID to assign after creation
 
-  const PetRegistrationPage({super.key, required this.petId});
+  const PetRegistrationPage({super.key, this.petId, this.qrId});
 
   @override
   ConsumerState<PetRegistrationPage> createState() =>
@@ -101,7 +102,9 @@ class _PetRegistrationPageState extends ConsumerState<PetRegistrationPage> {
       }
 
       // Generate pet ID if not provided (for new pets)
-      final petId = widget.petId.isEmpty ? const Uuid().v4() : widget.petId;
+      final petId = (widget.petId?.isEmpty ?? true)
+          ? const Uuid().v4()
+          : widget.petId!;
 
       print('Uploading photo to storage...');
       final photoUrl = await storageService.uploadPetPhoto(
@@ -140,10 +143,10 @@ class _PetRegistrationPageState extends ConsumerState<PetRegistrationPage> {
         (user) => user ?? (throw Exception('User not authenticated')),
       );
 
-      String petId = widget.petId;
+      String petId = widget.petId ?? '';
 
       // Check if this is a new pet (no petId) or updating existing pet
-      final isNewPet = widget.petId.isEmpty;
+      final isNewPet = widget.petId?.isEmpty ?? true;
 
       late final PetEntity petToSave;
 
@@ -181,7 +184,7 @@ class _PetRegistrationPageState extends ConsumerState<PetRegistrationPage> {
       } else {
         // Update existing pet
         final existingPet = await ref.read(getPetByIdUseCaseProvider)(
-          widget.petId,
+          widget.petId!,
         );
 
         final pet = existingPet.getOrElse(
@@ -259,6 +262,29 @@ class _PetRegistrationPageState extends ConsumerState<PetRegistrationPage> {
         } catch (e) {
           print('Error creating timeline entries: $e');
           // Don't fail the whole operation if timeline creation fails
+        }
+
+        // Assign QR code if provided
+        if (widget.qrId != null) {
+          try {
+            // Update pet with QR ID
+            final updatedPet = petToSave.copyWith(qrId: widget.qrId);
+            await ref.read(updatePetUseCaseProvider)(updatedPet);
+            print('✅ QR code ${widget.qrId} assigned to pet $petId');
+          } catch (e) {
+            print('❌ Error assigning QR code: $e');
+            // Don't fail the whole operation if QR assignment fails
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Pet berhasil dibuat, tapi gagal assign QR code: ${e.toString()}',
+                  ),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
+          }
         }
 
         if (!mounted) return;

@@ -1,4 +1,4 @@
-name: allnimall_qr
+name: allnimallv3
 description: "Smart QR Pet Collar Platform"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -58,6 +58,9 @@ dependencies:
   # Image & Video Handling
   image_picker: ^1.1.2
   image_cropper: ^8.0.2
+
+  # QR Code Scanner
+  qr_code_scanner: ^1.0.1
   flutter_image_compress: ^2.3.0
   video_player: ^2.9.2
   video_thumbnail: ^0.5.3
@@ -103,6 +106,9 @@ dev_dependencies:
   go_router_builder: ^2.7.1
   json_serializable: ^6.9.2
 
+  # Icons & Assets
+  flutter_launcher_icons: ^0.13.1
+
   # Testing
   mockito: ^5.4.4
 
@@ -147,3 +153,27 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Flutter Launcher Icons Configuration
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  web:
+    generate: true
+    image_path: "assets/images/app_launcher_icon.png"
+    background_color: "#000000"
+    theme_color: "#000000"
+  windows:
+    generate: true
+    image_path: "assets/images/app_launcher_icon.png"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/images/app_launcher_icon.png"
+  linux:
+    generate: true
+    image_path: "assets/images/app_launcher_icon.png"
+  image_path: "assets/images/app_launcher_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/images/app_launcher_icon.png"

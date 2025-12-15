@@ -23,6 +23,7 @@ import '../widgets/schedule_list_tile.dart';
 import '../widgets/upload_photo_sheet.dart';
 import '../widgets/add_edit_schedule_sheet.dart';
 import '../widgets/timeline_item_widget.dart';
+import '../widgets/qr_scanner_sheet.dart';
 import '../widgets/weight_input_sheet.dart';
 import '../widgets/health_sheets/vaccination_status_sheet.dart';
 import '../widgets/health_sheets/sterilization_status_sheet.dart';
@@ -520,6 +521,16 @@ class _PetProfilePageState extends ConsumerState<PetProfilePage>
         ),
         const SizedBox(height: 24),
 
+        // QR Collar Section
+        SectionHeader(
+          title: 'QR Collar',
+          color: AppColors.primary,
+          onEdit: () => _showQRManagementSheet(pet),
+        ),
+        const SizedBox(height: 12),
+        _buildQRCollarCard(pet),
+        const SizedBox(height: 24),
+
         // Health Section
         healthAsync.when(
           data: (health) {
@@ -949,6 +960,462 @@ class _PetProfilePageState extends ConsumerState<PetProfilePage>
         onAction: () => _showAddPhotoSheet(pet),
       ),
     );
+  }
+
+  Widget _buildQRCollarCard(PetEntity pet) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.greyLight),
+      ),
+      child: Column(
+        children: [
+          if (pet.qrId != null) ...[
+            // Current QR Code Display
+            Row(
+              children: [
+                const Icon(
+                  LucideIcons.qrCode,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'QR Code',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          color: AppColors.grey,
+                        ),
+                      ),
+                      Text(
+                        pet.qrId!,
+                        style: GoogleFonts.robotoMono(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => _showRemoveQRDialog(pet),
+                  icon: const Icon(LucideIcons.x, color: Colors.red, size: 20),
+                ),
+              ],
+            ),
+          ] else ...[
+            // No QR Code
+            Row(
+              children: [
+                const Icon(LucideIcons.qrCode, color: AppColors.grey, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'QR Collar',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          color: AppColors.grey,
+                        ),
+                      ),
+                      Text(
+                        'No QR collar assigned',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          color: AppColors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => _showQRManagementSheet(pet),
+                  icon: const Icon(
+                    LucideIcons.plus,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showQRManagementSheet(PetEntity pet) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Handle
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Text(
+              pet.qrId != null ? 'Update QR Collar' : 'Assign QR Collar',
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Scan QR code from your collar or enter manually',
+              style: GoogleFonts.nunito(fontSize: 14, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+
+            // QR Scanner Button
+            ElevatedButton.icon(
+              onPressed: () => _showQRScanner(pet),
+              icon: const Icon(LucideIcons.qrCode, size: 20),
+              label: const Text('Scan QR Code'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Divider
+            Row(
+              children: [
+                const Expanded(child: Divider()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'or',
+                    style: GoogleFonts.nunito(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const Expanded(child: Divider()),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Manual Input Button
+            OutlinedButton.icon(
+              onPressed: () => _showManualQRInput(pet),
+              icon: const Icon(LucideIcons.keyboard, size: 20),
+              label: const Text('Enter Manually'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Cancel Button
+            OutlinedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showQRScanner(PetEntity pet) {
+    Navigator.pop(context); // Close management sheet first
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => QRScannerSheet(
+        onQRScanned: (qrId) => _performQRAssignment(
+          context,
+          (setState) {}, // Dummy setState
+          pet,
+          qrId,
+          () {}, // Dummy setLoading
+          () {}, // Dummy clearLoading
+        ),
+        onCancel: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  void _showManualQRInput(PetEntity pet) {
+    Navigator.pop(context); // Close management sheet first
+
+    final qrIdController = TextEditingController();
+    bool isLoading = false;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              Text(
+                'Enter QR Code Manually',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Enter the 6-character QR code from your collar',
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              TextFormField(
+                controller: qrIdController,
+                decoration: InputDecoration(
+                  labelText: 'QR Code',
+                  hintText: 'ABC123',
+                  prefixIcon: const Icon(LucideIcons.qrCode),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  counterText: '',
+                ),
+                maxLength: 6,
+                textCapitalization: TextCapitalization.characters,
+                onChanged: (value) {
+                  setState(() {
+                    qrIdController.text = value.toUpperCase();
+                    qrIdController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: qrIdController.text.length),
+                    );
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'QR code is required';
+                  }
+                  if (value.length != 6) {
+                    return 'QR code must be 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: isLoading
+                          ? null
+                          : () => _performQRAssignment(
+                              context,
+                              setState,
+                              pet,
+                              qrIdController.text,
+                              () => setState(() => isLoading = true),
+                              () => setState(() => isLoading = false),
+                            ),
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(pet.qrId != null ? 'Update' : 'Assign'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _performQRAssignment(
+    BuildContext context,
+    StateSetter setState,
+    PetEntity pet,
+    String qrId,
+    VoidCallback setLoading,
+    VoidCallback clearLoading,
+  ) async {
+    if (qrId.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('QR code must be 6 characters'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setLoading();
+
+    try {
+      // Update pet with QR ID
+      final updatedPet = pet.copyWith(qrId: qrId);
+      await ref.read(updatePetUseCaseProvider)(updatedPet);
+
+      if (context.mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('QR code $qrId berhasil di-assign ke ${pet.name}!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Refresh pet data
+        ref.invalidate(petByIdProvider(pet.id));
+      }
+    } catch (e) {
+      clearLoading();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal assign QR code: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showRemoveQRDialog(PetEntity pet) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove QR Collar'),
+        content: Text(
+          'Are you sure you want to remove QR code ${pet.qrId} from ${pet.name}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _performQRRemoval(pet);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _performQRRemoval(PetEntity pet) async {
+    try {
+      // Remove QR ID from pet
+      final updatedPet = pet.copyWith(qrId: null);
+      await ref.read(updatePetUseCaseProvider)(updatedPet);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('QR code berhasil di-remove dari ${pet.name}'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+
+        // Refresh pet data
+        ref.invalidate(petByIdProvider(pet.id));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal remove QR code: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   // Modal sheet for editing biodata
@@ -1437,8 +1904,11 @@ class _PetProfilePageState extends ConsumerState<PetProfilePage>
         return UploadPhotoSheet(
           petId: pet.id,
           onSuccess: () {
-            AppLogger.info('📷 onSuccess callback - invalidating photos');
+            AppLogger.info(
+              '📷 onSuccess callback - invalidating photos and timeline',
+            );
             ref.invalidate(petPhotosProvider(pet.id));
+            ref.invalidate(petTimelinesProvider(pet.id));
           },
         );
       },

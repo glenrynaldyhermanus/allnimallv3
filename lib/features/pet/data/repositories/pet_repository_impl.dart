@@ -465,6 +465,7 @@ class PetRepositoryImpl implements PetRepository {
   @override
   Future<Either<Failure, ScanLogEntity>> createScanLog({
     required String petId,
+    String? qrId, // NEW: QR ID for tracking
     double? latitude,
     double? longitude,
     String? scannedByIp,
@@ -476,6 +477,7 @@ class PetRepositoryImpl implements PetRepository {
     try {
       final scanData = {
         'pet_id': petId,
+        'qr_id': qrId, // NEW: Include QR ID in scan log
         'latitude': latitude,
         'longitude': longitude,
         'scanned_by_ip': scannedByIp,
